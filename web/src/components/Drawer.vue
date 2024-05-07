@@ -5,6 +5,9 @@ import DrawerHead from "@/components/DrawerHead.vue";
 import CartItemList from "@/components/CartItemList.vue";
 import InfoBlock from "@/components/InfoBlock.vue";
 import axios from "axios";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps({
   totalPrice: Number,
@@ -18,10 +21,21 @@ const orderId = ref(false);
 
 const createOrder = async () => {
   try {
+    const token = localStorage.getItem('access_token');
+    if(!token){
+      return await router.push({name: 'login'})
+    }
     isCreating.value = true
-    const { data } = await axios.post('https://baea1c36f2661385.mokky.dev/orders', {
+    const { data } = await axios.post(
+        /*'https://baea1c36f2661385.mokky.dev/orders'*/
+        'http://127.0.0.1:8000/api/orders', {
       items: cart.value,
       totalPrice: props.totalPrice
+    }, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+      }
     })
     cart.value.map(item => {
       item.isAdded = false

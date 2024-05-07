@@ -37,7 +37,17 @@ class ItemsController extends Controller
         }
         $items = $query->get();
 
-        return $items->toJson();
+        $result = [];
+        foreach ($items as $item){
+            $result[] = [
+                'id' => $item->id,
+                'title' => $item->title,
+                'price' => $item->price,
+                'imageUrl' => asset($item->imageUrl)
+            ];
+        }
+
+        return response()->json($result);
     }
 
     /**

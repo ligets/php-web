@@ -3,7 +3,9 @@
   import axios from "axios";
   import debounce from 'lodash.debounce';
   import {inject, onMounted, reactive, ref, watch} from "vue";
+  import {useRouter} from "vue-router";
 
+  const router = useRouter();
 
   const items = ref([]);
 
@@ -16,18 +18,38 @@
 
   const addToFavorite = async (item) => {
     try {
+      const token = localStorage.getItem('access_token');
+      if(!token){
+        await router.push({name: 'login'})
+      }
       if(!item.isFavorite){
         const obj = {
           item_id: item.id
         }
         item.isFavorite = true
-        const { data } = await axios.post('https://baea1c36f2661385.mokky.dev/favorites', obj)
+        const { data } = await axios.post(
+          /*'https://baea1c36f2661385.mokky.dev/favorites'*/
+          'http://127.0.0.1:8000/api/favorites', obj, {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
 
         item.favoriteId = data.id
       }
       else {
         item.isFavorite = false
-        await axios.delete(`https://baea1c36f2661385.mokky.dev/favorites/${item.favoriteId}`)
+        await axios.delete(
+          /*`https://baea1c36f2661385.mokky.dev/favorites/${item.favoriteId}`*/
+          `http://127.0.0.1:8000/api/favorites/${item.id}`, {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
         item.favoriteId = null
       }
 
@@ -55,9 +77,21 @@
 
   const fetchFavorites = async () => {
     try {
-      const { data: favorites } = await axios.get('https://baea1c36f2661385.mokky.dev/favorites')
+      const token = localStorage.getItem('access_token');
+      if(!token){
+        return;
+      }
+      const { data: favorites } = await axios.get(
+        /*'https://baea1c36f2661385.mokky.dev/favorites'*/
+        'http://127.0.0.1:8000/api/favorites', {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
       items.value = items.value.map(item => {
-        const favorite = favorites.find(favorite => favorite.item_id === item.id)
+        const favorite = /*favorites.find(favorite => favorite.item_id === item.id)*/ favorites.find(favorite => favorite.id === item.id);
         if (!favorite) {
           return item;
         }
@@ -84,7 +118,8 @@
       }
 
       const { data } = await axios.get(
-          `https://baea1c36f2661385.mokky.dev/items`, {
+          /*`https://baea1c36f2661385.mokky.dev/items`*/
+          'http://127.0.0.1:8000/api/items', {
             params
           }
       )
@@ -128,7 +163,7 @@
 
   <div class="flex items-center gap-4">
     <select @change="onChangeSelect" class="py-2 px-3 border rounded-md outline-none">
-      <option value="name">По названию</option>
+      <option value="title">По названию</option>
       <option value="price">По цене(дешёвые)</option>
       <option value="-price">По цене(дорогие)</option>
     </select>

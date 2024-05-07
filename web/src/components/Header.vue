@@ -17,7 +17,7 @@
         </div>
       </div>
     </router-link>
-    <ul class="flex items-center gap-10">
+    <ul class="flex items-center gap-6">
       <li @click="() => emit('openDrawer')" class="flex items-center gap-3 text-gray-500 hover:text-black cursor-pointer">
         <img src="/cart.svg" alt="cart">
         <b>{{ totalPrice }} руб.</b>
@@ -28,10 +28,22 @@
           <span>Закладки</span>
         </li>
       </router-link>
-      <li class="flex items-center gap-3 text-gray-500 hover:text-black cursor-pointer">
-        <img src="/profile.svg" alt="profile">
-        <span>Профиль</span>
-      </li>
+      <router-link to="/login">
+        <li class="flex items-center gap-3 text-gray-500 hover:text-black cursor-pointer">
+  <!--        <img src="/profile.svg" alt="profile">-->
+  <!--        <span>Профиль</span>-->
+          <span>Войти</span>
+
+        </li>
+      </router-link>
+      <router-link to="/register">
+        <li class="flex items-center gap-3 text-gray-500 hover:text-black cursor-pointer">
+          <!--        <img src="/profile.svg" alt="profile">-->
+          <!--        <span>Профиль</span>-->
+          <span>Регистрация</span>
+
+        </li>
+      </router-link>
     </ul>
   </header>
 </template>
